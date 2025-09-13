@@ -1,0 +1,20 @@
+POST http://localhost:3000/api/contact-form
+Content-Type: application/json
+
+{
+    "templateName": "laguntza-fisioterapia",
+    "to": "jonurnieta@gmail.com",
+    "lang": "eu",
+    "data": {
+      "name": "Jon",
+      "email": "jonurnieta@gmail.com",
+      "phone": "666444222",
+      "message": "Bizkarreko mina daukat",
+      "source": "Instagram",
+      "submittedAt": "2024-10-05T14:48:00.000Z"
+    }
+  }
+
+###
+
+GET http://localhost:3000/api/templates
