@@ -132,7 +132,7 @@ app.listen(PORT, () => {
   logger.info('Environment: %s', isProduction ? 'production' : 'development');
   logger.info('From Email: %s', process.env.FROM_EMAIL || 'not set');
   logger.info('Ready to send emails via Resend');
-  logger.info('Access: http://localhost:%d', PORT);
+  logger.info('Access in port: %d', PORT);
 });
 
 module.exports = app;
