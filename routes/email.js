@@ -5,7 +5,7 @@ const emailTemplateService = require('../services/emailTemplateService');
 
 const router = express.Router();
 
-// Test SMTP connection endpoint
+// Test Resend API connection endpoint
 router.get('/test-connection', async (req, res) => {
   try {
     const { testConnection } = require('../services/emailService');
@@ -13,15 +13,15 @@ router.get('/test-connection', async (req, res) => {
     
     res.status(200).json({
       success: true,
-      message: 'SMTP connection is working',
+      message: 'Resend API connection is working',
       connected: isConnected
     });
   } catch (error) {
-    console.error('SMTP connection test error:', error);
+    console.error('Resend API connection test error:', error);
     
     res.status(500).json({
       success: false,
-      message: 'SMTP connection failed',
+      message: 'Resend API connection failed',
       error: process.env.NODE_ENV === 'development' ? error.message : 'Connection error'
     });
   }
@@ -59,7 +59,8 @@ router.post('/contact-form', async (req, res) => {
       subject: renderedTemplate.subject,
       text: renderedTemplate.text,
       html: renderedTemplate.html,
-      from: from || process.env.SMTP_USER
+      from: from || process.env.FROM_EMAIL || "onboarding@resend.dev",
+      replyTo: "jonurnieta@gmail.com",
     };
 
     const result = await sendEmail(emailOptions);

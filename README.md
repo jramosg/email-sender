@@ -1,12 +1,12 @@
 # Email Sender API
 
-A secure Node.js REST API for sending templated emails via SMTP, designed specifically for contact form submissions and automated email notifications.
+A secure Node.js REST API for sending templated emails via Resend, designed specifically for contact form submissions and automated email notifications.
 
 ## 🚀 Features
 
 - **Template-based emails** - Pre-designed HTML/text email templates
 - **Multi-language support** - Templates available in multiple languages (ES/EU)
-- **SMTP integration** - Send emails via any SMTP provider (Gmail, Outlook, etc.)
+- **Resend integration** - Send emails via Resend's reliable API
 - **Input validation** - Robust validation with Joi
 - **Smart rate limiting** - Environment-aware rate limiting (stricter in production)
 - **Security first** - CORS, Helmet, and security headers
@@ -29,7 +29,7 @@ A secure Node.js REST API for sending templated emails via SMTP, designed specif
 3. **Configure environment**
    ```bash
    cp .env.example .env
-   # Edit .env with your SMTP settings
+   # Edit .env with your Resend API key and sender email
    ```
 
 4. **Start the server**
@@ -52,28 +52,27 @@ Create a `.env` file with the following variables:
 PORT=3000
 NODE_ENV=development
 
-# SMTP Configuration
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_SECURE=true
-SMTP_USER=your-email@gmail.com
-SMTP_PASS=your-app-password
+# Resend Configuration
+RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+FROM_EMAIL=your-email@yourdomain.com
 
 # Optional
 ALLOWED_ORIGINS=http://localhost:3000,https://yourdomain.com
 ```
 
-### Gmail Setup
+### Resend Setup
 
-1. Enable 2-factor authentication
-2. Generate an App Password (not your regular password)
-3. Use the App Password in `SMTP_PASS`
+1. Sign up at [resend.com](https://resend.com)
+2. Generate an API key from your dashboard
+3. Add your domain and verify it (or use `onboarding@resend.dev` for testing)
+4. Set your `FROM_EMAIL` to a verified domain email address
 
-### Other SMTP Providers
+### Benefits of Resend
 
-- **Outlook**: `smtp-mail.outlook.com:587`
-- **Yahoo**: `smtp.mail.yahoo.com:587`
-- **Custom SMTP**: Configure your provider's settings
+- **High deliverability** - Built for modern email delivery
+- **No SMTP complexity** - Simple REST API
+- **Built-in analytics** - Track email performance
+- **Developer-friendly** - Clean API and excellent documentation
 
 ## 📋 API Endpoints
 
@@ -90,15 +89,15 @@ Returns server status and uptime.
 }
 ```
 
-### Test SMTP Connection
+### Test Resend Connection
 `GET /api/test-connection`
 
-Verifies SMTP configuration without sending emails.
+Verifies Resend API configuration.
 
 ```json
 {
   "success": true,
-  "message": "SMTP connection is working",
+  "message": "Resend API connection is working",
   "connected": true
 }
 ```
@@ -130,7 +129,7 @@ Sends a templated email based on contact form data.
 {
   "success": true,
   "message": "Template email sent successfully",
-  "messageId": "123456789@smtp.gmail.com",
+  "messageId": "re_abc123def456",
   "template": "laguntza-fisioterapia"
 }
 ```
@@ -231,9 +230,9 @@ node test-api.js
 ### Environment Setup
 
 1. Set `NODE_ENV=production`
-2. Configure production SMTP settings
+2. Configure production Resend API key and verified domain
 3. Set appropriate `ALLOWED_ORIGINS`
-4. Ensure secure SMTP credentials
+4. Ensure secure Resend API credentials
 
 ### Docker Deployment
 
@@ -254,7 +253,7 @@ email-sender/
 ├── routes/
 │   └── email.js          # API routes
 ├── services/
-│   ├── emailService.js   # SMTP service
+│   ├── emailService.js   # Resend email service
 │   └── emailTemplateService.js # Template management
 ├── middleware/
 │   └── validation.js     # Input validation

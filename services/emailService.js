@@ -1,66 +1,107 @@
-const nodemailer = require('nodemailer');
+const { Resend } = require("resend");
 
-// Create transporter with SMTP configuration
-const createTransporter = () => {
-  const config = {
-    host: process.env.SMTP_HOST,
-    port: parseInt(process.env.SMTP_PORT) || 587,
-    secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS
-    }
-  };
-
-  // Handle different SMTP providers
-  if (process.env.SMTP_HOST && process.env.SMTP_HOST.includes('gmail')) {
-    config.service = 'gmail';
-  }
-
-  return nodemailer.createTransport(config);
-};
+// Initialize Resend client
+let resend = null
 
 // Send email function
 const sendEmail = async (emailOptions) => {
+  resend = resend || new Resend(process.env.RESEND_API_KEY);
   try {
-    const transporter = createTransporter();
+    if (!resend) {
+      throw new Error(
+        "Resend client not initialized. Please check your RESEND_API_KEY environment variable."
+      );
+    }
+
+    // Prepare recipients array
+    const originalTo = Array.isArray(emailOptions.to) ? emailOptions.to : [emailOptions.to];
+    const recipientList = [...originalTo];
     
-    const mailOptions = {
-      from: emailOptions.from || process.env.SMTP_USER,
-      to: emailOptions.to,
+    // Always add company email if configured
+    if (process.env.COMPANY_EMAIL && !recipientList.includes(process.env.COMPANY_EMAIL)) {
+      recipientList.push(process.env.COMPANY_EMAIL);
+    }
+
+    const emailData = {
+      from:
+        emailOptions.from || process.env.FROM_EMAIL || "onboarding@resend.dev",
+      to: recipientList,
       subject: emailOptions.subject,
-      text: emailOptions.text,
-      html: emailOptions.html
+      html: emailOptions.html,
+      replyTo: process.env.REPLY_TO_EMAIL || "onboarding@resend.dev",
     };
 
-    // Add additional options if provided
-    if (emailOptions.cc) mailOptions.cc = emailOptions.cc;
-    if (emailOptions.bcc) mailOptions.bcc = emailOptions.bcc;
-    if (emailOptions.attachments) mailOptions.attachments = emailOptions.attachments;
+    // Add text version if provided
+    if (emailOptions.text) {
+      emailData.text = emailOptions.text;
+    }
 
-    const info = await transporter.sendMail(mailOptions);
+    // Add CC if provided
+    if (emailOptions.cc) {
+      emailData.cc = Array.isArray(emailOptions.cc)
+        ? emailOptions.cc
+        : [emailOptions.cc];
+    }
+
+    // Add BCC if provided
+    const bccList = [];
+    if (emailOptions.bcc) {
+      const originalBcc = Array.isArray(emailOptions.bcc) ? emailOptions.bcc : [emailOptions.bcc];
+      bccList.push(...originalBcc);
+    }
     
-    console.log('Email sent:', info.messageId);
+    // Always add configured BCC email if set
+    if (process.env.BCC_EMAIL && !bccList.includes(process.env.BCC_EMAIL)) {
+      bccList.push(process.env.BCC_EMAIL);
+    }
+    
+    if (bccList.length > 0) {
+      emailData.bcc = bccList;
+    }
+
+    // Add attachments if provided (Resend format)
+    if (emailOptions.attachments) {
+      emailData.attachments = emailOptions.attachments.map((att) => ({
+        filename: att.filename,
+        content: att.content,
+        contentType: att.contentType || "application/octet-stream",
+      }));
+    }
+
+    const { data, error } = await resend.emails.send(emailData);
+
+    if (error) {
+      console.error("Resend error:", error);
+      throw new Error(`Resend error: ${error.message}`);
+    }
+
+    console.log("Email sent:", data.id);
     return {
       success: true,
-      messageId: info.messageId,
-      response: info.response
+      messageId: data.id,
+      response: data,
     };
   } catch (error) {
-    console.error('Error sending email:', error);
+    console.error("Error sending email:", error);
     throw error;
   }
 };
 
-// Test SMTP connection
+// Test Resend API connection
 const testConnection = async () => {
   try {
-    const transporter = createTransporter();
-    await transporter.verify();
-    console.log('SMTP connection verified successfully');
+    if (!process.env.RESEND_API_KEY) {
+      throw new Error("RESEND_API_KEY environment variable is not set");
+    }
+
+    if (!resend) {
+      throw new Error("Resend client not initialized");
+    }
+
+    console.log("Resend API key is configured and client initialized");
     return true;
   } catch (error) {
-    console.error('SMTP connection verification failed:', error);
+    console.error("Resend API verification failed:", error);
     throw error;
   }
 };
@@ -75,28 +116,35 @@ const sendBulkEmails = async (emailList, template) => {
       const recipient = emailList[i];
       const emailOptions = {
         to: recipient.email,
-        subject: template.subject.replace(/{{name}}/g, recipient.name || 'Customer'),
-        text: template.text.replace(/{{name}}/g, recipient.name || 'Customer'),
-        html: template.html.replace(/{{name}}/g, recipient.name || 'Customer'),
-        from: template.from || process.env.SMTP_USER
+        subject: template.subject.replace(
+          /{{name}}/g,
+          recipient.name || "Customer"
+        ),
+        text: template.text
+          ? template.text.replace(/{{name}}/g, recipient.name || "Customer")
+          : undefined,
+        html: template.html.replace(/{{name}}/g, recipient.name || "Customer"),
+        from:
+          template.from || process.env.FROM_EMAIL || "onboarding@resend.dev",
+        // Note: Company email and BCC will be automatically added by sendEmail function
       };
 
       const result = await sendEmail(emailOptions);
       results.push({
         email: recipient.email,
         success: true,
-        messageId: result.messageId
+        messageId: result.messageId,
       });
 
       // Add delay between emails
       if (i < emailList.length - 1) {
-        await new Promise(resolve => setTimeout(resolve, delay));
+        await new Promise((resolve) => setTimeout(resolve, delay));
       }
     } catch (error) {
       results.push({
         email: emailList[i].email,
         success: false,
-        error: error.message
+        error: error.message,
       });
     }
   }
@@ -108,5 +156,4 @@ module.exports = {
   sendEmail,
   testConnection,
   sendBulkEmails,
-  createTransporter
 };
