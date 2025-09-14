@@ -28,10 +28,14 @@ app.use(
   })
 );
 
-// Basic request logging middleware
+// Basic request logging middleware (excludes /health endpoint)
 app.use((req, res, next) => {
   const start = Date.now();
   res.on('finish', () => {
+    // Skip logging for health check endpoint to reduce log noise
+    if (req.originalUrl === '/health') {
+      return;
+    }
     const duration = Date.now() - start;
     logger.info(`${req.method} ${req.originalUrl} ${res.statusCode} - ${duration}ms`);
   });
