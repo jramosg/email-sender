@@ -169,6 +169,8 @@ show_info() {
     print_success "Email Sender API is ready for production use!"
 }
 
+sudo chown -R 1001:1001 logs
+
 # Main function
 main() {
     echo "🚀 Email Sender API - Docker Deployment"

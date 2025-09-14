@@ -122,8 +122,8 @@ jobs:
             rm -rf $TEMP_EXTRACT_DIR
             
             # Make scripts executable
-            chmod +x *.sh
-            
+            chmod +x load-and-deploy.sh
+
             # Run the deployment
             ./load-and-deploy.sh
             
