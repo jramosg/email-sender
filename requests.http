@@ -17,4 +17,4 @@ Content-Type: application/json
 
 ###
 
-GET http://localhost:3000/api/templates
+GET http://REMOVED-IP:3000/api/templates

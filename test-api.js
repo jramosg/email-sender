@@ -71,13 +71,13 @@ const testAPI = async () => {
     const rootResponse = await makeRequest(API_BASE_URL);
     console.log('✅ Root endpoint response:', rootResponse.data.message);
     
-    // Test 3: SMTP connection (if configured)
-    console.log('\n3. Testing SMTP connection...');
+    // Test 3: Resend API connection (if configured)
+    console.log('\n3. Testing Resend API connection...');
     try {
       const connectionResponse = await makeRequest(`${API_BASE_URL}/api/test-connection`);
-      console.log('✅ SMTP connection test:', connectionResponse.data.message);
+      console.log('✅ Resend API connection test:', connectionResponse.data.message);
     } catch (error) {
-      console.log('⚠️  SMTP connection test failed (expected if not configured):', error.message);
+      console.log('⚠️  Resend API connection test failed (expected if not configured):', error.message);
     }
     
     // Test 4: Contact form validation (this will fail but test the validation)
@@ -102,8 +102,8 @@ const testAPI = async () => {
     
     console.log('\n✅ All API tests completed!');
     console.log('\n📝 Next steps:');
-    console.log('   1. Update .env file with your SMTP credentials');
-    console.log('   2. Test actual email sending with valid SMTP settings');
+    console.log('   1. Update .env file with your Resend API key and FROM_EMAIL');
+    console.log('   2. Test actual email sending with valid Resend configuration');
     console.log('   3. Use the API endpoints in your application');
     
   } catch (error) {
