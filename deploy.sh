@@ -116,7 +116,6 @@ deploy_docker() {
     
     # Wait for health check
     print_status "Waiting for application to be healthy..."
-    sleep 10
     
     max_attempts=12
     attempt=1

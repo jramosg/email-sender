@@ -34,15 +34,23 @@ jobs:
           
           # Copy essential files for deployment
           cp docker-compose.yml deployment-package/
-          cp deploy.sh deployment-package/
           cp email-sender.tar deployment-package/
+          
+          # Copy production environment file
+          if [ -f .env.prod ]; then
+            cp .env.prod deployment-package/
+            echo "✅ Copied .env.prod for production deployment"
+          else
+            echo "❌ .env.prod not found!"
+            exit 1
+          fi
           
           # Copy environment template if it exists
           if [ -f .env.example ]; then
             cp .env.example deployment-package/
           fi
           
-          # Create deployment script that loads the Docker image
+          # Create deployment script that loads the Docker image and runs compose
           cat > deployment-package/load-and-deploy.sh << 'EOF'
           #!/bin/bash
           set -e
@@ -50,14 +58,44 @@ jobs:
           echo "🚀 Loading Docker image..."
           docker load -i email-sender.tar
           
-          echo "🏃 Running deployment script..."
-          chmod +x deploy.sh
-          ./deploy.sh
+          echo "🛑 Stopping existing containers..."
+          docker-compose down 2>/dev/null || true
+          
+          echo "🚀 Starting containers with pre-built image..."
+          docker-compose up -d
+          
+          echo "⏱️  Waiting for application to be healthy..."
+          sleep 10
+          
+          # Health check
+          max_attempts=12
+          attempt=1
+          while [ $attempt -le $max_attempts ]; do
+            if curl -f -s http://localhost:3000/health >/dev/null 2>&1; then
+              echo "✅ Application is healthy!"
+              break
+            fi
+            
+            if [ $attempt -eq $max_attempts ]; then
+              echo "❌ Health check failed after $max_attempts attempts"
+              echo "📋 Container status:"
+              docker-compose ps
+              echo "📋 Recent logs:"
+              docker-compose logs --tail=20
+              exit 1
+            fi
+            
+            echo "⏳ Attempt $attempt/$max_attempts - waiting..."
+            sleep 5
+            ((attempt++))
+          done
           
           echo "🧹 Cleaning up..."
           rm -f email-sender.tar
           
           echo "✅ Deployment completed successfully!"
+          echo "📊 Container status:"
+          docker-compose ps
           EOF
           
           chmod +x deployment-package/load-and-deploy.sh
@@ -99,23 +137,21 @@ jobs:
             
             # Copy new application files (overwrite these)
             cp docker-compose.yml $DEPLOY_DIR/
-            cp deploy.sh $DEPLOY_DIR/
             cp load-and-deploy.sh $DEPLOY_DIR/
             cp email-sender.tar $DEPLOY_DIR/
             
-            # Only copy .env.example if it doesn't exist in destination
-            if [ -f .env.example ] && [ ! -f $DEPLOY_DIR/.env.example ]; then
-              cp .env.example $DEPLOY_DIR/
+            # Use production environment file
+            if [ -f .env.prod ]; then
+              cp .env.prod $DEPLOY_DIR/.env
+              echo "✅ Using .env.prod as production environment"
+            else
+              echo "❌ .env.prod not found in deployment package!"
+              exit 1
             fi
             
-            # Don't overwrite existing .env - preserve user's environment variables
-            if [ ! -f $DEPLOY_DIR/.env ]; then
-              if [ -f .env.example ]; then
-                cp .env.example $DEPLOY_DIR/.env
-                echo "⚠️  Created .env from template. Your existing environment should be preserved."
-              fi
-            else
-              echo "✅ Preserving existing .env file with your environment variables"
+            # Copy .env.example for reference if it doesn't exist
+            if [ -f .env.example ] && [ ! -f $DEPLOY_DIR/.env.example ]; then
+              cp .env.example $DEPLOY_DIR/
             fi
             
             # Clean up temporary extraction directory
