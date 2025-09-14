@@ -84,7 +84,7 @@ jobs:
           port: ${{ secrets.SERVER_PORT || 22 }}
           script: |
             # Set deployment directory
-            DEPLOY_DIR="/apps/email-sender"
+            DEPLOY_DIR="/root/apps/email-sender"
             
             # Create deployment directory if it doesn't exist
             sudo mkdir -p $DEPLOY_DIR
@@ -126,7 +126,7 @@ jobs:
           port: ${{ secrets.SERVER_PORT || 22 }}
           script: |
             # Check if the application is running
-            cd /apps/email-sender
+            cd root/apps/email-sender
             
             # Give the application time to start
             sleep 10
@@ -156,5 +156,5 @@ jobs:
           echo "🎉 Deployment completed successfully!"
           echo "📦 Docker image built and deployed to server"
           echo "🏃 Deployment executed via ./deploy.sh on VPS"
-          echo "📍 Application deployed to: /apps/email-sender/"
+          echo "📍 Application deployed to: root/apps/email-sender/"
           echo "🌐 Service should be available at: http://${{ secrets.SERVER_HOST }}:3000"
