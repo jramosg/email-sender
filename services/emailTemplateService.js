@@ -3,6 +3,7 @@
 
 const fs = require("fs");
 const path = require("path");
+const logger = require('../utils/logger');
 
 class EmailTemplateService {
   constructor() {
@@ -69,7 +70,7 @@ class EmailTemplateService {
   }
 
   getLaguntzaFisioterapiaTemplate(lang) {
-    console.log("Generating Laguntza Fisioterapia template for lang:", lang);
+    logger.info('Generating Laguntza Fisioterapia template for lang: %s', lang);
     try {
       const templatePath = this.getTemplatePath("laguntza-fisioterapia", lang, "html");
       const textPath = this.getTemplatePath("laguntza-fisioterapia", lang, "txt");

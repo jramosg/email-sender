@@ -1,5 +1,6 @@
 // Example usage of the Email Sender API
 const API_BASE_URL = 'http://localhost:3000/api';
+const logger = require('../utils/logger');
 
 // Helper function to make HTTP requests
 const makeRequest = async (url, options = {}) => {
@@ -34,9 +35,9 @@ const sendContactFormEmail = async () => {
       })
     });
     
-    console.log('Contact form email sent:', response.data);
+  logger.info('Contact form email sent: %o', response.data);
   } catch (error) {
-    console.error('Error sending contact form email:', error.message);
+  logger.error('Error sending contact form email: %s', error.message);
   }
 };
 
@@ -44,9 +45,9 @@ const sendContactFormEmail = async () => {
 const getAvailableTemplates = async () => {
   try {
     const response = await makeRequest(`${API_BASE_URL}/templates`);
-    console.log('Available templates:', response.data);
+  logger.info('Available templates: %o', response.data);
   } catch (error) {
-    console.error('Error getting templates:', error.message);
+  logger.error('Error getting templates: %s', error.message);
   }
 };
 
@@ -54,9 +55,9 @@ const getAvailableTemplates = async () => {
 const testConnection = async () => {
   try {
     const response = await makeRequest(`${API_BASE_URL}/test-connection`);
-    console.log('Connection test result:', response.data);
+  logger.info('Connection test result: %o', response.data);
   } catch (error) {
-    console.error('Error testing connection:', error.message);
+  logger.error('Error testing connection: %s', error.message);
   }
 };
 
@@ -89,33 +90,33 @@ const sendMultipleEmails = async () => {
         })
       });
       
-      console.log(`Contact form email sent to ${recipient.name}:`, response.data);
+  logger.info('Contact form email sent to %s: %o', recipient.name, response.data);
       
       // Add delay between emails to avoid rate limiting
       await new Promise(resolve => setTimeout(resolve, 1000));
     } catch (error) {
-      console.error(`Error sending email to ${recipient.name}:`, error.message);
+  logger.error('Error sending email to %s: %s', recipient.name, error.message);
     }
   }
 };
 
 // Run examples
 const runExamples = async () => {
-  console.log('🚀 Starting Email API Examples...\n');
+  logger.info('🚀 Starting Email API Examples...\n');
   
-  console.log('1. Testing SMTP connection...');
+  logger.info('1. Testing SMTP connection...');
   await testConnection();
   
-  console.log('\n2. Getting available templates...');
+  logger.info('\n2. Getting available templates...');
   await getAvailableTemplates();
   
-  console.log('\n3. Sending contact form email...');
+  logger.info('\n3. Sending contact form email...');
   await sendContactFormEmail();
   
-  console.log('\n4. Sending multiple contact form emails...');
+  logger.info('\n4. Sending multiple contact form emails...');
   await sendMultipleEmails();
   
-  console.log('\n✅ All examples completed!');
+  logger.info('\n✅ All examples completed!');
 };
 
 // Uncomment the line below to run the examples
