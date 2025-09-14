@@ -1,4 +1,5 @@
 const { Resend } = require("resend");
+const logger = require('../utils/logger');
 
 // Initialize Resend client
 let resend = null
@@ -76,18 +77,18 @@ const sendEmail = async (emailOptions) => {
     const { data, error } = await resend.emails.send(emailData);
 
     if (error) {
-      console.error("Resend error:", error);
+      logger.error('Resend error: %o', error);
       throw new Error(`Resend error: ${error.message}`);
     }
 
-    console.log("Email sent:", data.id);
+    logger.info('Email sent: %s', data.id);
     return {
       success: true,
       messageId: data.id,
       response: data,
     };
   } catch (error) {
-    console.error("Error sending email:", error);
+    logger.error('Error sending email: %o', error);
     throw error;
   }
 };
@@ -103,10 +104,10 @@ const testConnection = async () => {
       throw new Error("Resend client not initialized");
     }
 
-    console.log("Resend API key is configured and client initialized");
+  logger.info('Resend API key is configured and client initialized');
     return true;
   } catch (error) {
-    console.error("Resend API verification failed:", error);
+  logger.error('Resend API verification failed: %o', error);
     throw error;
   }
 };

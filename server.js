@@ -4,6 +4,7 @@ const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const dotenv = require("dotenv");
 const emailRoutes = require("./routes/email");
+const logger = require('./utils/logger');
 
 // Load environment variables
 dotenv.config();
@@ -15,6 +16,8 @@ const PORT = process.env.PORT || 3000;
 app.use(helmet());
 
 // CORS configuration
+// Log allowed origins and configure CORS
+logger.info('allowed origins: %s', process.env.ALLOWED_ORIGINS || '*');
 app.use(
   cors({
     origin: process.env.ALLOWED_ORIGINS
@@ -24,6 +27,16 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
+// Basic request logging middleware
+app.use((req, res, next) => {
+  const start = Date.now();
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    logger.http(`${req.method} ${req.originalUrl} ${res.statusCode} - ${duration}ms`);
+  });
+  next();
+});
 
 // Rate limiting - stricter limits in production
 const isProduction = process.env.NODE_ENV === "production";
@@ -98,7 +111,8 @@ app.use("*", (req, res) => {
 
 // Global error handler
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  logger.error('Unhandled error: %o', err);
+  // include stack in development responses
   res.status(500).json({
     error: "Something went wrong!",
     message:
@@ -110,11 +124,11 @@ app.use((err, req, res, next) => {
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`🚀 Email Sender API is running on port ${PORT}`);
-  console.log(`🌍 Environment: ${isProduction ? "production" : "development"}`);
-  console.log(`📧 From Email: ${process.env.FROM_EMAIL }`);
-  console.log(`📧 Ready to send emails via Resend`);
-  console.log(`🔗 http://localhost:${PORT}`);
+  logger.info(`🚀 Email Sender API is running on port ${PORT}`);
+  logger.info('Environment: %s', isProduction ? 'production' : 'development');
+  logger.info('From Email: %s', process.env.FROM_EMAIL || 'not set');
+  logger.info('Ready to send emails via Resend');
+  logger.info('Access: http://localhost:%d', PORT);
 });
 
 module.exports = app;

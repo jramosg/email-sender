@@ -3,6 +3,7 @@
 // Simple test script to verify the API is working
 const http = require('http');
 const { URL } = require('url');
+const logger = require('./utils/logger');
 
 const API_BASE_URL = 'http://localhost:3000';
 
@@ -59,29 +60,29 @@ const makeRequest = (url, options = {}) => {
 
 const testAPI = async () => {
   try {
-    console.log('🔍 Testing Email Sender API...\n');
+  logger.info('🔍 Testing Email Sender API...\n');
     
     // Test 1: Health check
-    console.log('1. Testing health endpoint...');
-    const healthResponse = await makeRequest(`${API_BASE_URL}/health`);
-    console.log('✅ Health check passed:', healthResponse.data.status);
+  logger.info('1. Testing health endpoint...');
+  const healthResponse = await makeRequest(`${API_BASE_URL}/health`);
+  logger.info('✅ Health check passed: %s', healthResponse.data.status);
     
     // Test 2: Root endpoint
-    console.log('\n2. Testing root endpoint...');
-    const rootResponse = await makeRequest(API_BASE_URL);
-    console.log('✅ Root endpoint response:', rootResponse.data.message);
+  logger.info('\n2. Testing root endpoint...');
+  const rootResponse = await makeRequest(API_BASE_URL);
+  logger.info('✅ Root endpoint response: %s', rootResponse.data.message);
     
     // Test 3: Resend API connection (if configured)
-    console.log('\n3. Testing Resend API connection...');
+  logger.info('\n3. Testing Resend API connection...');
     try {
       const connectionResponse = await makeRequest(`${API_BASE_URL}/api/test-connection`);
-      console.log('✅ Resend API connection test:', connectionResponse.data.message);
+  logger.info('✅ Resend API connection test: %s', connectionResponse.data.message);
     } catch (error) {
-      console.log('⚠️  Resend API connection test failed (expected if not configured):', error.message);
+  logger.warn('⚠️  Resend API connection test failed (expected if not configured): %s', error.message);
     }
     
     // Test 4: Contact form validation (this will fail but test the validation)
-    console.log('\n4. Testing contact form validation...');
+  logger.info('\n4. Testing contact form validation...');
     try {
       const response = await makeRequest(`${API_BASE_URL}/api/contact-form`, {
         method: 'POST',
@@ -93,23 +94,23 @@ const testAPI = async () => {
       });
       
       if (!response.ok) {
-        console.log('✅ Contact form validation working correctly');
-        console.log('   Error message:', response.data.message);
+        logger.info('✅ Contact form validation working correctly');
+        logger.info('   Error message: %s', response.data.message);
       }
     } catch (error) {
       console.log('❌ Unexpected error:', error.message);
     }
     
-    console.log('\n✅ All API tests completed!');
-    console.log('\n📝 Next steps:');
-    console.log('   1. Update .env file with your Resend API key and FROM_EMAIL');
-    console.log('   2. Test actual email sending with valid Resend configuration');
-    console.log('   3. Use the API endpoints in your application');
+  logger.info('\n✅ All API tests completed!');
+  logger.info('\n📝 Next steps:');
+  logger.info('   1. Update .env file with your Resend API key and FROM_EMAIL');
+  logger.info('   2. Test actual email sending with valid Resend configuration');
+  logger.info('   3. Use the API endpoints in your application');
     
   } catch (error) {
-    console.error('❌ Test failed:', error.message);
+    logger.error('❌ Test failed: %s', error.message);
     if (error.code === 'ECONNREFUSED') {
-      console.log('💡 Make sure the server is running: npm start');
+      logger.info('💡 Make sure the server is running: npm start');
     }
   }
 };

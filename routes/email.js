@@ -2,6 +2,7 @@ const express = require('express');
 const { sendEmail } = require('../services/emailService');
 const { validateEmailRequest } = require('../middleware/validation');
 const emailTemplateService = require('../services/emailTemplateService');
+const logger = require('../utils/logger');
 
 const router = express.Router();
 
@@ -17,7 +18,7 @@ router.get('/test-connection', async (req, res) => {
       connected: isConnected
     });
   } catch (error) {
-    console.error('Resend API connection test error:', error);
+  logger.error('Resend API connection test error: %o', error);
     
     res.status(500).json({
       success: false,
@@ -70,7 +71,7 @@ router.post('/contact-form', async (req, res) => {
       message: 'Email sent successfully',
     });
   } catch (error) {
-    console.error('Template email sending error:', error);
+  logger.error('Template email sending error: %o', error);
     
     res.status(500).json({
       success: false,
@@ -91,7 +92,7 @@ router.get('/templates', (req, res) => {
       templates: availableTemplates
     });
   } catch (error) {
-    console.error('Error getting templates:', error);
+  logger.error('Error getting templates: %o', error);
     
     res.status(500).json({
       success: false,
