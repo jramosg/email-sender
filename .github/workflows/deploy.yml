@@ -122,11 +122,11 @@ jobs:
             rm -rf $TEMP_EXTRACT_DIR
             
             # Make scripts executable
-            chmod +x load-and-deploy.sh
+            chmod +x $DEPLOY_DIR/load-and-deploy.sh
 
             # Run the deployment
-            ./load-and-deploy.sh
-            
+            ./$DEPLOY_DIR/load-and-deploy.sh
+
             # Clean up
             rm -f /tmp/deployment-package.tar.gz
 
