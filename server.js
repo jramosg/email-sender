@@ -112,6 +112,7 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log(`🚀 Email Sender API is running on port ${PORT}`);
   console.log(`🌍 Environment: ${isProduction ? "production" : "development"}`);
+  console.log(`📧 SMTP User: ${process.env.SMTP_USER}`);
   console.log(`📧 Ready to send emails via SMTP`);
   console.log(`🔗 http://localhost:${PORT}`);
 });
