@@ -87,26 +87,39 @@ jobs:
             DEPLOY_DIR="/root/apps/email-sender"
             
             # Create deployment directory if it doesn't exist
-            sudo mkdir -p $DEPLOY_DIR
+            mkdir -p $DEPLOY_DIR
             
-            # Create a backup of the current deployment (optional)
-            if [ -d "$DEPLOY_DIR" ] && [ "$(ls -A $DEPLOY_DIR)" ]; then
-              sudo mv $DEPLOY_DIR $DEPLOY_DIR.backup.$(date +%Y%m%d_%H%M%S)
-              sudo mkdir -p $DEPLOY_DIR
+            # Extract deployment package to a temporary directory first
+            TEMP_EXTRACT_DIR="/tmp/email-sender-deploy-$(date +%Y%m%d_%H%M%S)"
+            mkdir -p $TEMP_EXTRACT_DIR
+            tar -xzf /tmp/deployment-package.tar.gz -C $TEMP_EXTRACT_DIR
+            
+            # Copy files to deployment directory, preserving existing files
+            cd $TEMP_EXTRACT_DIR
+            
+            # Copy new application files (overwrite these)
+            cp docker-compose.yml $DEPLOY_DIR/
+            cp deploy.sh $DEPLOY_DIR/
+            cp load-and-deploy.sh $DEPLOY_DIR/
+            cp email-sender.tar $DEPLOY_DIR/
+            
+            # Only copy .env.example if it doesn't exist in destination
+            if [ -f .env.example ] && [ ! -f $DEPLOY_DIR/.env.example ]; then
+              cp .env.example $DEPLOY_DIR/
             fi
             
-            # Extract deployment package
-            cd $DEPLOY_DIR
-            sudo tar -xzf /tmp/deployment-package.tar.gz
-            
-            # Set proper ownership
-            sudo chown -R $USER:$USER $DEPLOY_DIR
-            
-            # Preserve existing .env if it exists, otherwise create from template
-            if [ ! -f .env ] && [ -f .env.example ]; then
-              cp .env.example .env
-              echo "⚠️  Created .env from template. Please configure it with your production settings."
+            # Don't overwrite existing .env - preserve user's environment variables
+            if [ ! -f $DEPLOY_DIR/.env ]; then
+              if [ -f .env.example ]; then
+                cp .env.example $DEPLOY_DIR/.env
+                echo "⚠️  Created .env from template. Your existing environment should be preserved."
+              fi
+            else
+              echo "✅ Preserving existing .env file with your environment variables"
             fi
+            
+            # Clean up temporary extraction directory
+            rm -rf $TEMP_EXTRACT_DIR
             
             # Make scripts executable
             chmod +x *.sh
@@ -126,7 +139,7 @@ jobs:
           port: ${{ secrets.SERVER_PORT || 22 }}
           script: |
             # Check if the application is running
-            cd root/apps/email-sender
+            cd /root/apps/email-sender
             
             # Give the application time to start
             sleep 10
@@ -156,5 +169,5 @@ jobs:
           echo "🎉 Deployment completed successfully!"
           echo "📦 Docker image built and deployed to server"
           echo "🏃 Deployment executed via ./deploy.sh on VPS"
-          echo "📍 Application deployed to: root/apps/email-sender/"
+          echo "📍 Application deployed to: /root/apps/email-sender/"
           echo "🌐 Service should be available at: http://${{ secrets.SERVER_HOST }}:3000"
