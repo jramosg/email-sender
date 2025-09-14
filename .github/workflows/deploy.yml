@@ -143,7 +143,7 @@ jobs:
             cd /root/apps/email-sender
             
             # Give the application time to start
-            sleep 20
+            sleep 10
             
             # Check if containers are running
             if docker-compose ps | grep -q "Up"; then
@@ -171,4 +171,3 @@ jobs:
           echo "📦 Docker image built and deployed to server"
           echo "🏃 Deployment executed via ./deploy.sh on VPS"
           echo "📍 Application deployed to: /root/apps/email-sender/"
-          echo "🌐 Service should be available at: http://${{ secrets.SERVER_HOST }}:3000"
