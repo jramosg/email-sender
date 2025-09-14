@@ -36,14 +36,17 @@ jobs:
           cp docker-compose.yml deployment-package/
           cp email-sender.tar deployment-package/
           
-          # Copy production environment file
-          if [ -f .env.prod ]; then
-            cp .env.prod deployment-package/
-            echo "✅ Copied .env.prod for production deployment"
-          else
-            echo "❌ .env.prod not found!"
-            exit 1
-          fi
+          # Create production environment file from secrets
+          cat > deployment-package/.env.prod << EOF
+          NODE_ENV=production
+          PORT=3000
+          ALLOWED_ORIGINS=${{ secrets.ALLOWED_ORIGINS }}
+          RESEND_API_KEY=${{ secrets.RESEND_API_KEY }}
+          FROM_EMAIL=${{ secrets.FROM_EMAIL }}
+          REPLY_TO_EMAIL=${{ secrets.REPLY_TO_EMAIL }}
+          BCC_EMAIL=${{ secrets.BCC_EMAIL }}
+          EOF
+          echo "✅ Created production environment from GitHub secrets"
           
           # Copy environment template if it exists
           if [ -f .env.example ]; then
