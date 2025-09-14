@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   email-sender:
-    build: .
+    image: email-sender:latest
     container_name: email-sender-api
     restart: unless-stopped
     ports:
