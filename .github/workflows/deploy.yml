@@ -121,12 +121,13 @@ jobs:
             # Clean up temporary extraction directory
             rm -rf $TEMP_EXTRACT_DIR
             
-            # Make scripts executable
-            chmod +x $DEPLOY_DIR/load-and-deploy.sh
-
+            # Change to deployment directory and make scripts executable
+            cd $DEPLOY_DIR
+            chmod +x *.sh
+            
             # Run the deployment
-            ./$DEPLOY_DIR/load-and-deploy.sh
-
+            ./load-and-deploy.sh
+            
             # Clean up
             rm -f /tmp/deployment-package.tar.gz
 
