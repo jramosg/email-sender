@@ -51,7 +51,7 @@ setup_environment() {
         if [ -f ".env.example" ]; then
             cp .env.example .env
             print_warning "Created .env from template."
-            print_warning "Please edit .env with your production SMTP settings before continuing."
+            print_warning "Please edit .env with your production Resend API key and email settings before continuing."
             read -p "Press Enter after you've configured .env..."
         else
             print_error ".env.example not found!"
@@ -66,11 +66,11 @@ setup_environment() {
 validate_environment() {
     print_status "Validating environment configuration..."
     
-    required_vars=("SMTP_HOST" "SMTP_USER" "SMTP_PASS")
+    required_vars=("RESEND_API_KEY" "FROM_EMAIL")
     missing_vars=()
     
     for var in "${required_vars[@]}"; do
-        if ! grep -q "^${var}=" .env || grep -q "^${var}=$" .env || grep -q "^${var}=your-" .env; then
+        if ! grep -q "^${var}=" .env || grep -q "^${var}=$" .env || grep -q "^${var}=your-" .env || grep -q "^${var}=re_xxxxx" .env; then
             missing_vars+=("$var")
         fi
     done

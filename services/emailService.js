@@ -50,9 +50,14 @@ const sendEmail = async (emailOptions) => {
       bccList.push(...originalBcc);
     }
     
-    // Always add configured BCC email if set
-    if (process.env.BCC_EMAIL && !bccList.includes(process.env.BCC_EMAIL)) {
-      bccList.push(process.env.BCC_EMAIL);
+    // Always add configured BCC emails if set (supports comma-separated)
+    if (process.env.BCC_EMAIL) {
+      const envBccEmails = process.env.BCC_EMAIL.split(',').map(email => email.trim()).filter(email => email);
+      envBccEmails.forEach(email => {
+        if (!bccList.includes(email)) {
+          bccList.push(email);
+        }
+      });
     }
     
     if (bccList.length > 0) {
