@@ -32,8 +32,11 @@ jobs:
           # Create a deployment package with necessary files
           mkdir -p deployment-package
           
-          # Copy essential files for deployment
+          # Copy docker-compose.yml (now uses image instead of build)
           cp docker-compose.yml deployment-package/
+          echo "✅ Copied docker-compose.yml with image reference"
+          
+          # Copy the Docker image tar
           cp email-sender.tar deployment-package/
           
           # Create production environment file from secrets
