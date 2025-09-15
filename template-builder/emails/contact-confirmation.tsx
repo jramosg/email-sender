@@ -112,7 +112,7 @@ export const ContactConfirmationEmail = ({
           fontFamily="Inter"
           fallbackFontFamily="Verdana"
           webFont={{
-            url: "https://cdn.jsdelivr.net/fontsource/fonts/inter:vf@latest/latin-wght-normal.woff2",
+            url: "https://laguntzafisioterapia.com/fonts/inter-latin-wght-normal.woff2",
             format: "woff2",
           }}
           fontWeight={400}
