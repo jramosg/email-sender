@@ -21,7 +21,7 @@ Email: {{email}}
 
 Telefonoak {{phone}}
 
-Nola ezagutu gaituzu: {{source}}
+Atxikitutako dokumentuak: {{attachmentNames}}
 
 --------------------------------------------------------------------------------
 
