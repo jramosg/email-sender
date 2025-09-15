@@ -39,9 +39,8 @@ interface ContactConfirmationEmailProps {
   email?: string;
   phone?: string;
   message?: string;
-  source?: string;
+  attachmentNames?: string;
   lang?: "eu" | "es";
-  submittedAt?: string;
 }
 
 const baseUrl = process.env.VERCEL_URL
@@ -53,9 +52,8 @@ export const ContactConfirmationEmail = ({
   email,
   phone,
   message,
-  source,
+  attachmentNames,
   lang = "es",
-  submittedAt,
 }: ContactConfirmationEmailProps) => {
   const translations = {
     eu: {
@@ -193,12 +191,11 @@ export const ContactConfirmationEmail = ({
                 </Text>
               </Section>
 
-              {/* Message Summary */}
               <Section className="mb-8">
-                <Text className="text-text-primary text-base font-semibold mb-3 whitespace-pre-line">
+                <Text className="text-text-primary text-base font-semibold mb-3">
                   {t.messageReceived}
                 </Text>
-                <Section className="bg-gray-100 rounded-lg p-4 border-l-4 border-brand-primary border-solid">
+                <Section className="bg-gray-100 rounded-lg p-4 border-l-4 border-brand-primary border-solid whitespace-pre-line">
                   <Text className="text-text-primary text-sm leading-5 m-0 ">
                     "{message}"
                   </Text>
@@ -219,14 +216,14 @@ export const ContactConfirmationEmail = ({
                       <strong>{t.phone}</strong> {phone}
                     </Text>
                   )}
-                  {source && (
+                  {attachmentNames && (
                     <Text className="text-text-secondary text-sm leading-5 m-0">
                       <strong>
                         {lang === "eu"
-                          ? "Nola ezagutu gaituzu:"
-                          : "Cómo nos conociste:"}
+                          ? "Atxikitutako dokumentuak:"
+                          : "Documentos adjuntos:"}
                       </strong>{" "}
-                      {source}
+                      {attachmentNames}
                     </Text>
                   )}
                 </Section>
@@ -354,8 +351,8 @@ ContactConfirmationEmail.PreviewProps = {
   email: "{{email}}",
   phone: "{{phone}}",
   message: "{{message}}",
-  source: "{{source}}",
-  lang: "eu",
+  attachmentNames: "{{attachmentNames}}",
+  lang: "es",
 } as ContactConfirmationEmailProps;
 
 export default ContactConfirmationEmail;

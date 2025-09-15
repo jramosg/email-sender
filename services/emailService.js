@@ -116,7 +116,6 @@ const testConnection = async () => {
 const sendBulkEmails = async (emailList, template) => {
   const results = [];
   const delay = 1000; // 1 second delay between emails to avoid rate limiting
-
   for (let i = 0; i < emailList.length; i++) {
     try {
       const recipient = emailList[i];
@@ -132,6 +131,7 @@ const sendBulkEmails = async (emailList, template) => {
         html: template.html.replace(/{{name}}/g, recipient.name || "Customer"),
         from:
           template.from || process.env.FROM_EMAIL || "onboarding@resend.dev",
+        attachments: data.attachments || undefined,
         // Note: Company email and BCC will be automatically added by sendEmail function
       };
 

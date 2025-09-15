@@ -23,7 +23,7 @@ Email: {{email}}
 
 Teléfonos {{phone}}
 
-Cómo nos conociste: {{source}}
+Documentos adjuntos: {{attachmentNames}}
 
 --------------------------------------------------------------------------------
 
