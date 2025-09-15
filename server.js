@@ -1,9 +1,9 @@
-const express = require("express");
-const cors = require("cors");
-const helmet = require("helmet");
-const rateLimit = require("express-rate-limit");
-const dotenv = require("dotenv");
-const emailRoutes = require("./routes/email");
+const express = require('express');
+const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+const dotenv = require('dotenv');
+const emailRoutes = require('./routes/email');
 const logger = require('./utils/logger');
 
 // Load environment variables
@@ -21,10 +21,10 @@ logger.info('allowed origins: %s', process.env.ALLOWED_ORIGINS || '*');
 app.use(
   cors({
     origin: process.env.ALLOWED_ORIGINS
-      ? process.env.ALLOWED_ORIGINS.split(",")
-      : "*",
-    methods: ["GET", "POST", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+      ? process.env.ALLOWED_ORIGINS.split(',')
+      : '*',
+    methods: ['GET', 'POST', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
   })
 );
 
@@ -37,19 +37,21 @@ app.use((req, res, next) => {
       return;
     }
     const duration = Date.now() - start;
-    logger.info(`${req.method} ${req.originalUrl} ${res.statusCode} - ${duration}ms`);
+    logger.info(
+      `${req.method} ${req.originalUrl} ${res.statusCode} - ${duration}ms`
+    );
   });
   next();
 });
 
 // Rate limiting - stricter limits in production
-const isProduction = process.env.NODE_ENV === "production";
+const isProduction = process.env.NODE_ENV === 'production';
 const limiter = rateLimit({
   windowMs: isProduction ? 60 * 60 * 1000 : 15 * 60 * 1000, // 1 hour in prod, 15 minutes in dev
   max: isProduction ? 5 : 100, // 5 requests per hour in prod, 100 per 15min in dev
   message: {
-    error: "Too many requests from this IP, please try again later.",
-  },
+    error: 'Too many requests from this IP, please try again later.'
+  }
 });
 
 // Additional stricter rate limiter for production (2 requests per minute)
@@ -57,16 +59,16 @@ const strictLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
   max: 2, // 2 requests per minute
   message: {
-    error: "Too many requests from this IP, please try again later.",
-  },
+    error: 'Too many requests from this IP, please try again later.'
+  }
 });
 
 const developLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // 100 requests per 15 minutes
   message: {
-    error: "Too many requests from this IP, please try again later.",
-  },
+    error: 'Too many requests from this IP, please try again later.'
+  }
 });
 
 // Apply rate limiting
@@ -78,38 +80,38 @@ if (isProduction) {
 }
 
 // Body parsing middleware
-app.use(express.json({ limit: "30mb" }));
-app.use(express.urlencoded({ extended: true, limit: "30mb" }));
+app.use(express.json({ limit: '30mb' }));
+app.use(express.urlencoded({ extended: true, limit: '30mb' }));
 
 // Routes
-app.use("/api", emailRoutes);
+app.use('/api', emailRoutes);
 
 // Health check endpoint
-app.get("/health", (req, res) => {
+app.get('/health', (req, res) => {
   res.json({
-    status: "ok",
+    status: 'ok',
     timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
+    uptime: process.uptime()
   });
 });
 
 // Root endpoint
-app.get("/", (req, res) => {
+app.get('/', (req, res) => {
   res.json({
-    message: "Email Sender API",
-    version: "1.0.0",
+    message: 'Email Sender API',
+    version: '1.0.0',
     endpoints: {
-      "POST /api/send-email": "Send an email",
-      "GET /health": "Health check",
-    },
+      'POST /api/send-email': 'Send an email',
+      'GET /health': 'Health check'
+    }
   });
 });
 
 // 404 handler
-app.use("*", (req, res) => {
+app.use('*', (req, res) => {
   res.status(404).json({
-    error: "Route not found",
-    path: req.originalUrl,
+    error: 'Route not found',
+    path: req.originalUrl
   });
 });
 
@@ -118,11 +120,11 @@ app.use((err, req, res, next) => {
   logger.error('Unhandled error: %o', err);
   // include stack in development responses
   res.status(500).json({
-    error: "Something went wrong!",
+    error: 'Something went wrong!',
     message:
-      process.env.NODE_ENV === "development"
+      process.env.NODE_ENV === 'development'
         ? err.message
-        : "Internal server error",
+        : 'Internal server error'
   });
 });
 

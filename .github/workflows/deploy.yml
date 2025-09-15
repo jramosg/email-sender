@@ -23,7 +23,7 @@ jobs:
         run: |
           # Build the Docker image
           docker build -t email-sender:latest .
-          
+
           # Save the image as a tar file for transfer
           docker save email-sender:latest -o email-sender.tar
 
@@ -31,14 +31,14 @@ jobs:
         run: |
           # Create a deployment package with necessary files
           mkdir -p deployment-package
-          
+
           # Copy docker-compose.yml (now uses image instead of build)
           cp docker-compose.yml deployment-package/
           echo "✅ Copied docker-compose.yml with image reference"
-          
+
           # Copy the Docker image tar
           cp email-sender.tar deployment-package/
-          
+
           # Create production environment file from secrets
           cat > deployment-package/.env.prod << EOF
           NODE_ENV=production
@@ -50,29 +50,29 @@ jobs:
           BCC_EMAIL=${{ secrets.BCC_EMAIL }}
           EOF
           echo "✅ Created production environment from GitHub secrets"
-          
+
           # Copy environment template if it exists
           if [ -f .env.example ]; then
             cp .env.example deployment-package/
           fi
-          
+
           # Create deployment script that loads the Docker image and runs compose
           cat > deployment-package/load-and-deploy.sh << 'EOF'
           #!/bin/bash
           set -e
-          
+
           echo "🚀 Loading Docker image..."
           docker load -i email-sender.tar
-          
+
           echo "🛑 Stopping existing containers..."
           docker-compose down 2>/dev/null || true
-          
+
           echo "🚀 Starting containers with pre-built image..."
           docker-compose up -d
-          
+
           echo "⏱️  Waiting for application to be healthy..."
           sleep 10
-          
+
           # Health check
           max_attempts=12
           attempt=1
@@ -95,17 +95,17 @@ jobs:
             sleep 5
             ((attempt++))
           done
-          
+
           echo "🧹 Cleaning up..."
           rm -f email-sender.tar
-          
+
           echo "✅ Deployment completed successfully!"
           echo "📊 Container status:"
           docker-compose ps
           EOF
-          
+
           chmod +x deployment-package/load-and-deploy.sh
-          
+
           # Create a tar archive of the deployment package
           tar -czf deployment-package.tar.gz -C deployment-package .
 
@@ -129,23 +129,23 @@ jobs:
           script: |
             # Set deployment directory
             DEPLOY_DIR="/root/apps/email-sender"
-            
+
             # Create deployment directory if it doesn't exist
             mkdir -p $DEPLOY_DIR
-            
+
             # Extract deployment package to a temporary directory first
             TEMP_EXTRACT_DIR="/tmp/email-sender-deploy-$(date +%Y%m%d_%H%M%S)"
             mkdir -p $TEMP_EXTRACT_DIR
             tar -xzf /tmp/deployment-package.tar.gz -C $TEMP_EXTRACT_DIR
-            
+
             # Copy files to deployment directory, preserving existing files
             cd $TEMP_EXTRACT_DIR
-            
+
             # Copy new application files (overwrite these)
             cp docker-compose.yml $DEPLOY_DIR/
             cp load-and-deploy.sh $DEPLOY_DIR/
             cp email-sender.tar $DEPLOY_DIR/
-            
+
             # Use production environment file
             if [ -f .env.prod ]; then
               cp .env.prod $DEPLOY_DIR/.env
@@ -154,22 +154,22 @@ jobs:
               echo "❌ .env.prod not found in deployment package!"
               exit 1
             fi
-            
+
             # Copy .env.example for reference if it doesn't exist
             if [ -f .env.example ] && [ ! -f $DEPLOY_DIR/.env.example ]; then
               cp .env.example $DEPLOY_DIR/
             fi
-            
+
             # Clean up temporary extraction directory
             rm -rf $TEMP_EXTRACT_DIR
-            
+
             # Change to deployment directory and make scripts executable
             cd $DEPLOY_DIR
             chmod +x *.sh
-            
+
             # Run the deployment
             ./load-and-deploy.sh
-            
+
             # Clean up
             rm -f /tmp/deployment-package.tar.gz
 
@@ -183,10 +183,10 @@ jobs:
           script: |
             # Check if the application is running
             cd /root/apps/email-sender
-            
+
             # Give the application time to start
             sleep 10
-            
+
             # Check if containers are running
             if docker-compose ps | grep -q "Up"; then
               echo "✅ Email Sender API is running successfully!"
