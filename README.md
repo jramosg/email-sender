@@ -16,23 +16,27 @@ A secure Node.js REST API for sending templated emails via Resend, designed spec
 ## 📦 Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd email-sender
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Configure environment**
+
    ```bash
    cp .env.example .env
    # Edit .env with your Resend API key and sender email
    ```
 
 4. **Start the server**
+
    ```bash
    # Development
    npm run dev
@@ -77,6 +81,7 @@ ALLOWED_ORIGINS=http://localhost:3000,https://yourdomain.com
 ## 📋 API Endpoints
 
 ### Health Check
+
 `GET /health`
 
 Returns server status and uptime.
@@ -90,6 +95,7 @@ Returns server status and uptime.
 ```
 
 ### Test Resend Connection
+
 `GET /api/test-connection`
 
 Verifies Resend API configuration.
@@ -103,11 +109,13 @@ Verifies Resend API configuration.
 ```
 
 ### Send Contact Form Email
+
 `POST /api/contact-form`
 
 Sends a templated email based on contact form data.
 
 **Request:**
+
 ```json
 {
   "templateName": "laguntza-fisioterapia",
@@ -125,6 +133,7 @@ Sends a templated email based on contact form data.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -135,6 +144,7 @@ Sends a templated email based on contact form data.
 ```
 
 ### Get Available Templates
+
 `GET /api/templates`
 
 Returns list of available email templates.
@@ -152,6 +162,7 @@ Returns list of available email templates.
 ### Template Structure
 
 Templates are organized by name and language:
+
 ```
 templates/
 ├── laguntza-fisioterapia/
@@ -181,14 +192,17 @@ Templates support variable interpolation using `{{variable}}` syntax:
 ## 🔒 Security & Rate Limiting
 
 ### Development Environment
+
 - **Rate limit**: 100 requests per 15 minutes per IP
 
 ### Production Environment
+
 - **Primary limit**: 2 requests per minute per IP
 - **Secondary limit**: 5 requests per hour per IP
 - Both limits are enforced simultaneously
 
 ### Security Features
+
 - Helmet.js for security headers
 - CORS configuration
 - Input validation and sanitization
@@ -221,6 +235,7 @@ Content-Type: application/json
 ### Automated Testing
 
 Run the test script:
+
 ```bash
 node test-api.js
 ```

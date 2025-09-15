@@ -14,24 +14,24 @@ import {
   Tailwind,
   Text,
   Font,
-  Row,
-} from "@react-email/components";
+  Row
+} from '@react-email/components';
 
 // Constants
 const Address = {
-  name: "Zubitxo Plaza, 3, 20130 Urnieta, Gipuzkoa",
-  url: "https://maps.app.goo.gl/ct7ZQvDpocAY3V5ZA",
+  name: 'Zubitxo Plaza, 3, 20130 Urnieta, Gipuzkoa',
+  url: 'https://maps.app.goo.gl/ct7ZQvDpocAY3V5ZA'
 };
 
 const Phone = {
-  name: "943 036 070",
-  url: "tel:+34943036070",
+  name: '943 036 070',
+  url: 'tel:+34943036070'
 };
 
 const WhatsApp = {
-  name: "688 734 113",
-  url: "https://wa.me/688734113",
-  urlCall: "tel:+34688734113",
+  name: '688 734 113',
+  url: 'https://wa.me/688734113',
+  urlCall: 'tel:+34688734113'
 };
 
 interface ContactConfirmationEmailProps {
@@ -40,12 +40,12 @@ interface ContactConfirmationEmailProps {
   phone?: string;
   message?: string;
   attachmentNames?: string;
-  lang?: "eu" | "es";
+  lang?: 'eu' | 'es';
 }
 
 const baseUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
-  : "";
+  : '';
 
 export const ContactConfirmationEmail = ({
   name,
@@ -53,54 +53,54 @@ export const ContactConfirmationEmail = ({
   phone,
   message,
   attachmentNames,
-  lang = "es",
+  lang = 'es'
 }: ContactConfirmationEmailProps) => {
   const translations = {
     eu: {
-      previewText: "Zure mezua jaso dugu - Laguntza Fisioterapia",
-      title: "Zure mezua jaso dugu",
+      previewText: 'Zure mezua jaso dugu - Laguntza Fisioterapia',
+      title: 'Zure mezua jaso dugu',
       greeting: `Kaixo ${name}`,
-      thankYou: "Eskerrik asko gurekin harremanetan jartzeagatik.",
-      confirmation: "Zure eskaera arrakastaz jaso dugu.",
-      responseTime: "Ahalik eta azkarren erantzungo dizugu, normalean",
-      responseTimeRange: "24 ordutan gehienez",
-      messageReceived: "Jasotako mezua:",
-      contactInfo: "Zure kontaktu-datuak:",
-      emergencyNote: "Larrialdi kasuetan, deitu iezaguzu:",
-      phone: "Telefonoak",
-      whatsapp: "WhatsApp",
-      address: "Helbidea",
+      thankYou: 'Eskerrik asko gurekin harremanetan jartzeagatik.',
+      confirmation: 'Zure eskaera arrakastaz jaso dugu.',
+      responseTime: 'Ahalik eta azkarren erantzungo dizugu, normalean',
+      responseTimeRange: '24 ordutan gehienez',
+      messageReceived: 'Jasotako mezua:',
+      contactInfo: 'Zure kontaktu-datuak:',
+      emergencyNote: 'Larrialdi kasuetan, deitu iezaguzu:',
+      phone: 'Telefonoak',
+      whatsapp: 'WhatsApp',
+      address: 'Helbidea',
       addressValue: Address.name,
-      hours: "Ordutegia:",
-      hoursValue: "Astelehenetik ostiralera: 9:00 - 20:00",
+      hours: 'Ordutegia:',
+      hoursValue: 'Astelehenetik ostiralera: 9:00 - 20:00',
       footer:
-        "Mezu hau zure kontaktu-formularioaren baieztapen automatikoa da. Ez erantzun mezu honi zuzenean.",
-      team: "Laguntza Fisioterapia",
+        'Mezu hau zure kontaktu-formularioaren baieztapen automatikoa da. Ez erantzun mezu honi zuzenean.',
+      team: 'Laguntza Fisioterapia'
     },
     es: {
-      previewText: "Hemos recibido tu mensaje - Laguntza Fisioterapia",
-      title: "Hemos recibido tu mensaje",
+      previewText: 'Hemos recibido tu mensaje - Laguntza Fisioterapia',
+      title: 'Hemos recibido tu mensaje',
       greeting: `Hola ${name}`,
-      thankYou: "Gracias por ponerte en contacto con nosotros.",
+      thankYou: 'Gracias por ponerte en contacto con nosotros.',
       confirmation:
-        "Hemos recibido exitosamente tu formulario de contacto y nuestro equipo ya está revisando tu caso.",
+        'Hemos recibido exitosamente tu formulario de contacto y nuestro equipo ya está revisando tu caso.',
       responseTime:
-        "Te responderemos lo antes posible, normalmente en un plazo de",
-      responseTimeRange: "24 horas como máximo",
-      messageReceived: "Mensaje recibido:",
-      contactInfo: "Tus datos de contacto:",
+        'Te responderemos lo antes posible, normalmente en un plazo de',
+      responseTimeRange: '24 horas como máximo',
+      messageReceived: 'Mensaje recibido:',
+      contactInfo: 'Tus datos de contacto:',
       emergencyNote:
-        "Para casos de urgencia, llama directamente a nuestro centro:",
-      phone: "Teléfonos",
-      whatsapp: "WhatsApp",
-      address: "Dirección",
+        'Para casos de urgencia, llama directamente a nuestro centro:',
+      phone: 'Teléfonos',
+      whatsapp: 'WhatsApp',
+      address: 'Dirección',
       addressValue: Address.name,
-      hours: "Horario:",
-      hoursValue: "Lunes a viernes: 9:00 - 20:00",
+      hours: 'Horario:',
+      hoursValue: 'Lunes a viernes: 9:00 - 20:00',
       footer:
-        "Este mensaje es una confirmación automática de tu formulario de contacto. No respondas directamente a este correo.",
-      team: "Laguntza Fisioterapia",
-    },
+        'Este mensaje es una confirmación automática de tu formulario de contacto. No respondas directamente a este correo.',
+      team: 'Laguntza Fisioterapia'
+    }
   };
 
   const t = translations[lang];
@@ -112,8 +112,8 @@ export const ContactConfirmationEmail = ({
           fontFamily="Inter"
           fallbackFontFamily="Verdana"
           webFont={{
-            url: "https://laguntzafisioterapia.com/fonts/inter-latin-wght-normal.woff2",
-            format: "woff2",
+            url: 'https://laguntzafisioterapia.com/fonts/inter-latin-wght-normal.woff2',
+            format: 'woff2'
           }}
           fontWeight={400}
           fontStyle="normal"
@@ -125,15 +125,15 @@ export const ContactConfirmationEmail = ({
           theme: {
             extend: {
               colors: {
-                "brand-primary": "#458295",
-                "brand-secondary": "#e8944a",
-                "brand-light": "#cbe0e8",
-                "text-primary": "#1d1d1f",
-                "text-secondary": "#86868b",
-                "border-light": "#f5f5f7",
-              },
-            },
-          },
+                'brand-primary': '#458295',
+                'brand-secondary': '#e8944a',
+                'brand-light': '#cbe0e8',
+                'text-primary': '#1d1d1f',
+                'text-secondary': '#86868b',
+                'border-light': '#f5f5f7'
+              }
+            }
+          }
         }}
       >
         <Body className="mx-auto my-auto bg-brand-light font-inter">
@@ -183,7 +183,7 @@ export const ContactConfirmationEmail = ({
               {/* Response Time Box */}
               <Section className="bg-brand-light rounded-xl p-6 mb-8 border border-border-light border-solid border-1">
                 <Text className="text-text-primary text-base leading-6 m-0">
-                  <strong>{t.responseTime}</strong>{" "}
+                  <strong>{t.responseTime}</strong>{' '}
                   <span className="text-brand-primary font-semibold">
                     {t.responseTimeRange}
                   </span>
@@ -219,10 +219,10 @@ export const ContactConfirmationEmail = ({
                   {attachmentNames && (
                     <Text className="text-text-secondary text-sm leading-5 m-0">
                       <strong>
-                        {lang === "eu"
-                          ? "Atxikitutako dokumentuak:"
-                          : "Documentos adjuntos:"}
-                      </strong>{" "}
+                        {lang === 'eu'
+                          ? 'Atxikitutako dokumentuak:'
+                          : 'Documentos adjuntos:'}
+                      </strong>{' '}
                       {attachmentNames}
                     </Text>
                   )}
@@ -252,14 +252,14 @@ export const ContactConfirmationEmail = ({
                   </Text>
 
                   <Text className="text-text-secondary text-sm leading-5 mb-2">
-                    <strong>{t.phone}:</strong>{" "}
+                    <strong>{t.phone}:</strong>{' '}
                     <Link
                       href={Phone.url}
                       className="text-brand-primary underline "
                     >
                       {Phone.name}
                     </Link>
-                    {" | "}
+                    {' | '}
                     <Link
                       href={WhatsApp.urlCall}
                       className="text-brand-primary underline"
@@ -269,7 +269,7 @@ export const ContactConfirmationEmail = ({
                   </Text>
 
                   <Text className="text-text-secondary text-sm leading-5 mb-2 mt-0">
-                    <strong>{t.whatsapp}:</strong>{" "}
+                    <strong>{t.whatsapp}:</strong>{' '}
                     <Link
                       href={WhatsApp.url}
                       className="text-green-600 underline"
@@ -278,7 +278,7 @@ export const ContactConfirmationEmail = ({
                     </Link>
                   </Text>
                   <Text className="text-text-secondary text-sm leading-5 mb-2 mt-0">
-                    <strong>{t.address}:</strong>{" "}
+                    <strong>{t.address}:</strong>{' '}
                     <Link
                       href={Address.url}
                       className="text-brand-primary underline"
@@ -295,18 +295,18 @@ export const ContactConfirmationEmail = ({
                   href="https://laguntzafisioterapia.com"
                   className="bg-brand-primary text-white font-semibold py-4 px-8 rounded-full text-base no-underline inline-block transition-all duration-200"
                 >
-                  {lang === "eu"
-                    ? "Bisitatu gure webgunea"
-                    : "Visitar nuestra web"}
+                  {lang === 'eu'
+                    ? 'Bisitatu gure webgunea'
+                    : 'Visitar nuestra web'}
                 </Button>
               </Section>
 
               {/* Social Media Section */}
               <Section className="text-center mb-8 mx-auto">
                 <Text className="text-text-primary text-base font-medium mb-1">
-                  {lang === "eu"
-                    ? "Jarrai iezaguzu sare sozialetan"
-                    : "Síguenos en redes sociales"}
+                  {lang === 'eu'
+                    ? 'Jarrai iezaguzu sare sozialetan'
+                    : 'Síguenos en redes sociales'}
                 </Text>
                 <Row className="mx-auto w-full">
                   <Link
@@ -347,12 +347,12 @@ export const ContactConfirmationEmail = ({
 };
 
 ContactConfirmationEmail.PreviewProps = {
-  name: "{{name}}",
-  email: "{{email}}",
-  phone: "{{phone}}",
-  message: "{{message}}",
-  attachmentNames: "{{attachmentNames}}",
-  lang: "es",
+  name: '{{name}}',
+  email: '{{email}}',
+  phone: '{{phone}}',
+  message: '{{message}}',
+  attachmentNames: '{{attachmentNames}}',
+  lang: 'es'
 } as ContactConfirmationEmailProps;
 
 export default ContactConfirmationEmail;

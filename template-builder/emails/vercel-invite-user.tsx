@@ -13,7 +13,7 @@ import {
   Row,
   Section,
   Tailwind,
-  Text,
+  Text
 } from '@react-email/components';
 
 interface VercelInviteUserEmailProps {
@@ -41,7 +41,7 @@ export const VercelInviteUserEmail = ({
   teamImage,
   inviteLink,
   inviteFromIp,
-  inviteFromLocation,
+  inviteFromLocation
 }: VercelInviteUserEmailProps) => {
   const previewText = `Join ${invitedByUsername} on Vercel`;
 
@@ -147,7 +147,7 @@ VercelInviteUserEmail.PreviewProps = {
   teamImage: `${baseUrl}/static/vercel-team.png`,
   inviteLink: 'https://vercel.com/teams/invite/foo',
   inviteFromIp: '204.13.186.218',
-  inviteFromLocation: 'São Paulo, Brazil',
+  inviteFromLocation: 'São Paulo, Brazil'
 } as VercelInviteUserEmailProps;
 
 export default VercelInviteUserEmail;

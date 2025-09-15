@@ -1,8 +1,8 @@
-const { Resend } = require("resend");
+const { Resend } = require('resend');
 const logger = require('../utils/logger');
 
 // Initialize Resend client
-let resend = null
+let resend = null;
 
 // Send email function
 const sendEmail = async (emailOptions) => {
@@ -10,26 +10,31 @@ const sendEmail = async (emailOptions) => {
   try {
     if (!resend) {
       throw new Error(
-        "Resend client not initialized. Please check your RESEND_API_KEY environment variable."
+        'Resend client not initialized. Please check your RESEND_API_KEY environment variable.'
       );
     }
 
     // Prepare recipients array
-    const originalTo = Array.isArray(emailOptions.to) ? emailOptions.to : [emailOptions.to];
+    const originalTo = Array.isArray(emailOptions.to)
+      ? emailOptions.to
+      : [emailOptions.to];
     const recipientList = [...originalTo];
-    
+
     // Always add company email if configured
-    if (process.env.COMPANY_EMAIL && !recipientList.includes(process.env.COMPANY_EMAIL)) {
+    if (
+      process.env.COMPANY_EMAIL &&
+      !recipientList.includes(process.env.COMPANY_EMAIL)
+    ) {
       recipientList.push(process.env.COMPANY_EMAIL);
     }
 
     const emailData = {
       from:
-        emailOptions.from || process.env.FROM_EMAIL || "onboarding@resend.dev",
+        emailOptions.from || process.env.FROM_EMAIL || 'onboarding@resend.dev',
       to: recipientList,
       subject: emailOptions.subject,
       html: emailOptions.html,
-      replyTo: process.env.REPLY_TO_EMAIL || "onboarding@resend.dev",
+      replyTo: process.env.REPLY_TO_EMAIL || 'onboarding@resend.dev'
     };
 
     // Add text version if provided
@@ -47,20 +52,24 @@ const sendEmail = async (emailOptions) => {
     // Add BCC if provided
     const bccList = [];
     if (emailOptions.bcc) {
-      const originalBcc = Array.isArray(emailOptions.bcc) ? emailOptions.bcc : [emailOptions.bcc];
+      const originalBcc = Array.isArray(emailOptions.bcc)
+        ? emailOptions.bcc
+        : [emailOptions.bcc];
       bccList.push(...originalBcc);
     }
-    
+
     // Always add configured BCC emails if set (supports comma-separated)
     if (process.env.BCC_EMAIL) {
-      const envBccEmails = process.env.BCC_EMAIL.split(',').map(email => email.trim()).filter(email => email);
-      envBccEmails.forEach(email => {
+      const envBccEmails = process.env.BCC_EMAIL.split(',')
+        .map((email) => email.trim())
+        .filter((email) => email);
+      envBccEmails.forEach((email) => {
         if (!bccList.includes(email)) {
           bccList.push(email);
         }
       });
     }
-    
+
     if (bccList.length > 0) {
       emailData.bcc = bccList;
     }
@@ -70,7 +79,7 @@ const sendEmail = async (emailOptions) => {
       emailData.attachments = emailOptions.attachments.map((att) => ({
         filename: att.filename,
         content: att.content,
-        contentType: att.contentType || "application/octet-stream",
+        contentType: att.contentType || 'application/octet-stream'
       }));
     }
 
@@ -85,7 +94,7 @@ const sendEmail = async (emailOptions) => {
     return {
       success: true,
       messageId: data.id,
-      response: data,
+      response: data
     };
   } catch (error) {
     logger.error('Error sending email: %o', error);
@@ -97,17 +106,17 @@ const sendEmail = async (emailOptions) => {
 const testConnection = async () => {
   try {
     if (!process.env.RESEND_API_KEY) {
-      throw new Error("RESEND_API_KEY environment variable is not set");
+      throw new Error('RESEND_API_KEY environment variable is not set');
     }
 
     if (!resend) {
-      throw new Error("Resend client not initialized");
+      throw new Error('Resend client not initialized');
     }
 
-  logger.info('Resend API key is configured and client initialized');
+    logger.info('Resend API key is configured and client initialized');
     return true;
   } catch (error) {
-  logger.error('Resend API verification failed: %o', error);
+    logger.error('Resend API verification failed: %o', error);
     throw error;
   }
 };
@@ -123,15 +132,15 @@ const sendBulkEmails = async (emailList, template) => {
         to: recipient.email,
         subject: template.subject.replace(
           /{{name}}/g,
-          recipient.name || "Customer"
+          recipient.name || 'Customer'
         ),
         text: template.text
-          ? template.text.replace(/{{name}}/g, recipient.name || "Customer")
+          ? template.text.replace(/{{name}}/g, recipient.name || 'Customer')
           : undefined,
-        html: template.html.replace(/{{name}}/g, recipient.name || "Customer"),
+        html: template.html.replace(/{{name}}/g, recipient.name || 'Customer'),
         from:
-          template.from || process.env.FROM_EMAIL || "onboarding@resend.dev",
-        attachments: data.attachments || undefined,
+          template.from || process.env.FROM_EMAIL || 'onboarding@resend.dev',
+        attachments: data.attachments || undefined
         // Note: Company email and BCC will be automatically added by sendEmail function
       };
 
@@ -139,7 +148,7 @@ const sendBulkEmails = async (emailList, template) => {
       results.push({
         email: recipient.email,
         success: true,
-        messageId: result.messageId,
+        messageId: result.messageId
       });
 
       // Add delay between emails
@@ -150,7 +159,7 @@ const sendBulkEmails = async (emailList, template) => {
       results.push({
         email: emailList[i].email,
         success: false,
-        error: error.message,
+        error: error.message
       });
     }
   }
@@ -161,5 +170,5 @@ const sendBulkEmails = async (emailList, template) => {
 module.exports = {
   sendEmail,
   testConnection,
-  sendBulkEmails,
+  sendBulkEmails
 };
