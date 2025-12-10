@@ -44,40 +44,24 @@ app.use((req, res, next) => {
   next();
 });
 
-// Rate limiting - stricter limits in production
 const isProduction = process.env.NODE_ENV === 'production';
 const limiter = rateLimit({
-  windowMs: isProduction ? 60 * 60 * 1000 : 15 * 60 * 1000, // 1 hour in prod, 15 minutes in dev
-  max: isProduction ? 5 : 100, // 5 requests per hour in prod, 100 per 15min in dev
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: isProduction ? 3 : 10, // 3 requests per hour in prod, 10 in dev
   message: {
     error: 'Too many requests from this IP, please try again later.'
-  }
-});
-
-// Additional stricter rate limiter for production (2 requests per minute)
-const strictLimiter = rateLimit({
-  windowMs: 60 * 1000, // 1 minute
-  max: 2, // 2 requests per minute
-  message: {
-    error: 'Too many requests from this IP, please try again later.'
-  }
-});
-
-const developLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // 100 requests per 15 minutes
-  message: {
-    error: 'Too many requests from this IP, please try again later.'
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: (req) => req.path === '/health' || req.path === '/', // Skip rate limiting for health check and root
+  keyGenerator: (req) => {
+    // Use forwarded IP if behind proxy, otherwise use connection IP
+    return req.ip || req.connection.remoteAddress || 'unknown';
   }
 });
 
 // Apply rate limiting
-if (isProduction) {
-  app.use(strictLimiter); // 2 requests per minute
-  app.use(limiter); // 5 requests per hour (secondary check)
-} else {
-  app.use(developLimiter); // Development limits
-}
+app.use(limiter);
 
 // Body parsing middleware
 app.use(express.json({ limit: '30mb' }));
