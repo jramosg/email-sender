@@ -45,8 +45,9 @@ class EmailTemplateService {
     let html = template.html;
     let text = template.text || '';
     let subject = template.subject || '';
-    data.attachmentNames =
-      data.attachments.map((att) => att.filename).join(', ') || '';
+    data.attachmentNames = data.attachments && Array.isArray(data.attachments)
+      ? data.attachments.map((att) => att.filename).join(', ')
+      : '';
 
     // Replace variables in format {{variable}}
     Object.keys(data).forEach((key) => {
