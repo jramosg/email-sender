@@ -47,7 +47,7 @@ app.use((req, res, next) => {
 const isProduction = process.env.NODE_ENV === 'production';
 const limiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: isProduction ? 3 : 10, // 3 requests per hour in prod, 10 in dev
+  max: isProduction ? 300 : 10, // 3 requests per hour in prod, 10 in dev
   message: {
     error: 'Too many requests from this IP, please try again later.'
   },
