@@ -34,7 +34,7 @@ const sendEmail = async (emailOptions) => {
       to: recipientList,
       subject: emailOptions.subject,
       html: emailOptions.html,
-      replyTo: process.env.REPLY_TO_EMAIL || 'onboarding@resend.dev'
+      replyTo: recipientList
     };
 
     // Add text version if provided
